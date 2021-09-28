@@ -110,7 +110,7 @@ public class SmtpTester {
                 close(in, out);
                 return;
             }
-            write(out, "MAIL FROM:<" + email + ">" + (utf8 ? " SMTPUTF8" : ""));
+            write(out, "MAIL FROM:<" + email + "> SMTPUTF8");
             response = read(in);
             close(in, out);
             if (utf8) {
