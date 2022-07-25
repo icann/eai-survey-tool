@@ -74,11 +74,16 @@ public class MxTester {
                 while (rs.next()) {
                     String ip = rs.getString("ip");
                     if (SpecialIpBlock.isSpecial(ip)) {
-                        SmtpTesterResult result = new SmtpTesterResult(ip, null, null, null, null, null, null, null);
+                        SmtpTesterResult result = new SmtpTesterResult(ip, 'S');
                         outQueue.put(result);
                         logger.info("Skipping Private/No Global IP Address: " + ip);
+                    } else if (config.excludeIp(ip)) {
+                        SmtpTesterResult result = new SmtpTesterResult(ip, 'X');
+                        outQueue.put(result);
+                        logger.info("Excluded IP Address: " + ip);
+                    } else {
+                        inQueue.put(ip);
                     }
-                    inQueue.put(ip);
                 }
             }
         }
@@ -113,13 +118,14 @@ public class MxTester {
 
                     // --- Check the results ---
                     stmt.setString(1, result.getHeader());
-                    stmt.setString(2, result.getEhlo());
-                    stmt.setString(3, result.getEhloResult());
-                    stmt.setString(4, result.getAscii());
-                    stmt.setString(5, result.getAsciiResult());
-                    stmt.setString(6, result.getIdn());
-                    stmt.setString(7, result.getIdnResult());
-                    stmt.setString(8, result.getServer());
+                    stmt.setString(2, "" + result.getStatus());
+                    stmt.setString(3, result.getEhlo());
+                    stmt.setString(4, result.getEhloResult());
+                    stmt.setString(5, result.getAscii());
+                    stmt.setString(6, result.getAsciiResult());
+                    stmt.setString(7, result.getIdn());
+                    stmt.setString(8, result.getIdnResult());
+                    stmt.setString(9, result.getServer());
                     stmt.addBatch();
                     if (count++ > limit) {
                         stmt.executeBatch();

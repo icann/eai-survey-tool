@@ -1,9 +1,10 @@
 -- find_list_to_search
-select ip from ip where timestamp is null order by rand()
+select ip from ip where status = 'N' order by rand()
 
 -- update_ip_results
 update ip set
     header = ?,
+    status = ?,
     ehlo_success = ?,
     ehlo_result = ?,
     ascii_success = ?,

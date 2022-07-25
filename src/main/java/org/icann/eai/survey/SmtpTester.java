@@ -67,7 +67,7 @@ public class SmtpTester {
             }
         }
         if (ehlo == null || !ehlo) {
-            return new SmtpTesterResult(server, header, ehlo, ehloResult, ascii, asciiResult, idn, idnResult);
+            return new SmtpTesterResult(server, 'T', header, ehlo, ehloResult, ascii, asciiResult, idn, idnResult);
         }
 
         // --- Wait ---
@@ -84,7 +84,7 @@ public class SmtpTester {
             }
         }
 
-        return new SmtpTesterResult(server, header, ehlo, ehloResult, ascii, asciiResult, idn, idnResult);
+        return new SmtpTesterResult(server, 'T', header, ehlo, ehloResult, ascii, asciiResult, idn, idnResult);
     }
 
 

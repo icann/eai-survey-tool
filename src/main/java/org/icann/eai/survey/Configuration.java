@@ -1,5 +1,6 @@
 package org.icann.eai.survey;
 
+import inet.ipaddr.IPAddressString;
 import org.apache.commons.dbcp2.BasicDataSourceFactory;
 
 import javax.sql.DataSource;
@@ -24,6 +25,7 @@ public class Configuration {
     private final int databaseBatchSize;
     private final int databaseStatementFetchSize;
     private final File maxmindDatabaseFile;
+    private final IPAddressString[] excludeIps;
     private final float sentinelThreshold;
     private final Duration sentinelPeriod;
     private final long sentinelMin;
@@ -62,6 +64,7 @@ public class Configuration {
         this.databaseBatchSize = getInt(p, "db.batch.size");
         this.databaseStatementFetchSize = getInt(p, "db.statement.fetch_size");
         this.maxmindDatabaseFile = new File(getString(p, "maxmind.database.filename"));
+        this.excludeIps = parseExcludeIps(p, "ip.exclude");
         this.sentinelThreshold = Float.parseFloat(getString(p, "sentinel.threshold"));
         this.sentinelPeriod = getDuration(p, "sentinel.period");
         this.sentinelMin = Long.parseLong(getString(p, "sentinel.min"));
@@ -122,6 +125,17 @@ public class Configuration {
         return list;
     }
 
+    private IPAddressString[] parseExcludeIps(Properties p, String key) {
+        String value = p.getProperty(key);
+        if (value == null) {
+            return null;
+        }
+        String[] tokens = value.split("\\s*,\\s*");
+        IPAddressString[] list = new IPAddressString[tokens.length];
+        for (int i = 0; i < list.length; i++) list[i] = new IPAddressString(tokens[i]);
+        return list;
+    }
+
     private int getInt(Properties p, String key) {
         return Integer.parseInt(getString(p, key));
     }
@@ -175,7 +189,7 @@ public class Configuration {
      * Creates a DataSource object from the configuration.
      *
      * @return A DataSource to the database.
-     * @throws Exception When a error occurs when creating the DataSource.
+     * @throws Exception When an error occurs when creating the DataSource.
      */
     public DataSource getDataSource() throws Exception {
         return BasicDataSourceFactory.createDataSource(databaseConfig);
@@ -208,6 +222,16 @@ public class Configuration {
 
     public File getMaxmindDatabaseFile() {
         return maxmindDatabaseFile;
+    }
+
+    public boolean excludeIp(String value) {
+        if (this.excludeIps == null) return false;
+
+        IPAddressString ip = new IPAddressString(value);
+        for (IPAddressString block : this.excludeIps) {
+            if (block.contains(ip)) return true;
+        }
+        return false;
     }
 
     public float getSentinelThreshold() {

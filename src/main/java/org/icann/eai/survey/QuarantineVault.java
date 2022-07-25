@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Quarantine class that protects consulting the an IP on the same block concurrently.
+ * Quarantine class that protects consulting an IP on the same block concurrently.
  */
 public class QuarantineVault extends Thread {
     private static final BigInteger TWO_COMPLEMENT_REF = BigInteger.ONE.shiftLeft(64);

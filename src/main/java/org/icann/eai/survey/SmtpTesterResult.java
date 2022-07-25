@@ -5,6 +5,7 @@ package org.icann.eai.survey;
  */
 public class SmtpTesterResult {
     private final String server;
+    private final char status;
     private final String header;
     private final Boolean ehlo;
     private final String ehloResult;
@@ -13,8 +14,13 @@ public class SmtpTesterResult {
     private final Boolean idn;
     private final String idnResult;
 
-    public SmtpTesterResult(String server, String header, Boolean ehlo, String ehloResult, Boolean ascii, String asciiResult, Boolean idn, String idnResult) {
+    public SmtpTesterResult(String server, char status) {
+        this(server, status, null, null,  null, null, null, null, null);
+    }
+
+    public SmtpTesterResult(String server, char status, String header, Boolean ehlo, String ehloResult, Boolean ascii, String asciiResult, Boolean idn, String idnResult) {
         this.server = server;
+        this.status = status;
         this.header = header;
         this.ehlo = ehlo;
         this.ehloResult = ehloResult;
@@ -26,6 +32,7 @@ public class SmtpTesterResult {
 
     public SmtpTesterResult() {
         this.server = null;
+        this.status = 'N';
         this.header = null;
         this.ehlo = null;
         this.ehloResult = null;
@@ -38,6 +45,10 @@ public class SmtpTesterResult {
     // --- Getters ---
     public String getServer() {
         return server;
+    }
+
+    public char getStatus() {
+        return status;
     }
 
     public String getHeader() {

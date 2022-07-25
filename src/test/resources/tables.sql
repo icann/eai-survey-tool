@@ -39,6 +39,7 @@ create table mx_ip (
 
 create table ip (
     ip              varchar(39)     not null,
+    status          char(1)         not null,  -- # - N = No Tested, S = Skipped Special, X = Excluded, T = Tested
     header          text(32768)             ,
     ehlo_result     text(4000)              ,
     ehlo_success    char(1)                 ,

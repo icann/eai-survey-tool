@@ -77,7 +77,7 @@ public class ResolverThread extends Thread {
                 sleep = duration - time;
             } catch (Throwable t) {
                 sentinel.reportError();
-                logger.log(Level.WARNING, "Error resolving owner: " + owner);
+                logger.log(Level.WARNING, "Error resolving owner: " + owner, t);
             }
 
             // --- Throttle queries ---

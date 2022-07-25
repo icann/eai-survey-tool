@@ -11,4 +11,4 @@ update mx set status_4 = ? where mx = ?
 update mx set status_6 = ? where mx = ?
 
 -- create_ip
-insert into ip (ip) select distinct ip from mx_ip
+insert into ip (ip, status) select distinct ip, 'N' from mx_ip
