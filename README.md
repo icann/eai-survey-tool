@@ -9,7 +9,7 @@ The application is built in Java 8 and uses a MariaDB database to store the test
 - Java Compiler version 8 or superior.
 - Apache Maven version 3.6 or superior.
 ### Compiling th source code with Buildah and creating an Podman/Docker image
-- Builda 1.19.6 or superior.
+- Buildah 1.19.6 or superior.
 ### Manual Execution
 - Java JRE version 8 or superior.
 - Docker CE version 20.10.7 or superior.
@@ -153,22 +153,17 @@ java.util.logging.FileHandler.count = 3
 The first step is to configure the scripts. All the scripts use the same configuration file in the script folder with the name scripts.cfg.
 | Constant | Example | Description |
 | -------- | ------- | ------------|
-| Working Directory |||
 | WORK_DIR | $HOME/temp | Base working directory |
-| EAI Survey Tool |||
 | EAI_NAME | eai-survey | EAI Tool name |
 | EAI_VERSION | 1.1.0 | EAI Tool version |
 | EAI_IMAGE | $EAI_NAME:$EAI_VERSION | EAI Tool container image |
 | EAI_CONFIG_FILENAME | $PWD/config.properties | EAI Tool configuration file |
 | EAI_LOG_CONFIG_FILENAME | $PWD/logging.properties | EAI Tool log configuration file |
 | EAI_MAXMIND_FILENAME | $HOME/geoip/GeoIP2-Country.mmdb | EAI Tool MaxMind database file |
-| Buildah |||
 | BUILDAH_BUILDER_IMAGE | registry.access.redhat.com/ubi8/openjdk-11 | Buildah builder container image |
 | BUILDAH_RUN_IMAGE | registry.access.redhat.com/ubi8/openjdk-11-runtime | Buildah run container image |
-| Zones |||
 | ZONES_SRC_DIR | $HOME/zones | Sorce zones directory |
 | ZONES_DIR | $WORK_DIR/zones | Working zones directory |
-| Temporal Database |||
 | DB_DIR | $WORK_DIR/data | Database files |
 | DB_IMAGE | docker.io/mariadb | Database container image |
 | DB_BIND_ADDR | 127.0.0.1 | Database binding address |
@@ -178,9 +173,7 @@ The first step is to configure the scripts. All the scripts use the same configu
 | DB_MEM | 20G | Memory used by the database |
 | DB_USERNAME | eai | Database username |
 | DB_PASSWORD | eai | Database password |
-| Results |||
 | CSV_DIR | $WORK_DIR/csv | Output directory |
-| AWS / SnowSQL Export |||
 | AWS_DIR | $HOME/.aws | Amazon AWS client config path |
 | AWS_IMAGE | docker.io/amazon/aws-cli | Amazon AWS client container image |
 | SNOWSQL_DIR | $HOME/.snowsql | SnowSQL client path |
