@@ -25,4 +25,4 @@ cm run --rm --name $EAI_NAME -ti --network host \
 	-v $EAI_LOG_CONFIG_FILENAME:/home/jboss/$EAI_NAME-$EAI_VERSION/logging.properties \
 	-v $EAI_MAXMIND_FILENAME:/home/jboss/$EAI_NAME-$EAI_VERSION/geoip/GeoIP2-Country.mmdb \
 	-w /home/jboss/$EAI_NAME-$EAI_VERSION \
-	$EAI_IMAGE java -Xmx4g -jar $EAI_NAME-$EAI_VERSION.jar
+	$EAI_IMAGE $EAI_RUN_COMMAND

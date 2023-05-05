@@ -160,6 +160,7 @@ The first step is to configure the scripts. All the scripts use the same configu
 | EAI_CONFIG_FILENAME | $PWD/config.properties | EAI Tool configuration file |
 | EAI_LOG_CONFIG_FILENAME | $PWD/logging.properties | EAI Tool log configuration file |
 | EAI_MAXMIND_FILENAME | $HOME/geoip/GeoIP2-Country.mmdb | EAI Tool MaxMind database file |
+| EAI_RUN_COMMAND | java -Xmx4g -jar $EAI_NAME-$EAI_VERSION.jar | EAI Tool execution command |
 | BUILDAH_BUILDER_IMAGE | registry.access.redhat.com/ubi8/openjdk-11 | Buildah builder container image |
 | BUILDAH_RUN_IMAGE | registry.access.redhat.com/ubi8/openjdk-11-runtime | Buildah run container image |
 | ZONES_SRC_DIR | $HOME/zones | Sorce zones directory |
