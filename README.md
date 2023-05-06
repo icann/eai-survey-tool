@@ -8,7 +8,7 @@ The application is built in Java 8 and uses a MariaDB database to store the test
 ### Compiling the source code
 - Java Compiler version 8 or superior.
 - Apache Maven version 3.6 or superior.
-### Compiling th source code with Buildah and creating an Podman/Docker image
+### Compiling the source code with Buildah and creating an Podman/Docker image
 - Buildah 1.19.6 or superior.
 ### Manual Execution
 - Java JRE version 8 or superior.
@@ -185,7 +185,7 @@ The first step is to configure the scripts. All the scripts use the same configu
 ### 2. Execute setup.sh script.
 The next step is  executing the `setup.sh` script. This script search for the latest zones files, decompress them, parse them, and creates an import database file. This script also creates a Docker container from the latest version of MariaDB image.
 
-Zone files are expected to be found in the location specified by the `ZONES_SRC_DIRA` parameter, following the structure below. In the directory structure, the `yyyymmdd` directory is replaced with the date corresponding to the date of the zone files to be used in the survey, and `tld1`, `tld2`, etc. is replaced with the actual TLDs to be surveyed. If more than one directory is found for multiple dates, the script will consider the directory named after the latest date available only:
+Zone files are expected to be found in the location specified by the `ZONES_SRC_DIR` parameter, following the structure below. In the directory structure, the `yyyymmdd` directory is replaced with the date corresponding to the date of the zone files to be used in the survey, and `tld1`, `tld2`, etc. is replaced with the actual TLDs to be surveyed. If more than one directory is found for multiple dates, the script will consider the directory named after the latest date available only:
  - source_directory (as configured for the ZONES_SRC_DIR constant)
    - yyyymmdd
      - tld1
