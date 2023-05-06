@@ -23,6 +23,7 @@ fi
 cm run --rm --name $EAI_NAME -ti --network host \
 	-v $EAI_CONFIG_FILENAME:/home/jboss/$EAI_NAME-$EAI_VERSION/config.properties \
 	-v $EAI_LOG_CONFIG_FILENAME:/home/jboss/$EAI_NAME-$EAI_VERSION/logging.properties \
+	-v $EAI_LOGS_DIR:/logs \
 	-v $EAI_MAXMIND_FILENAME:/home/jboss/$EAI_NAME-$EAI_VERSION/geoip/GeoIP2-Country.mmdb \
 	-w /home/jboss/$EAI_NAME-$EAI_VERSION \
-	$EAI_IMAGE $EAI_RUN_COMMAND
+	-d $EAI_IMAGE $EAI_RUN_COMMAND
