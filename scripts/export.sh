@@ -54,12 +54,11 @@ cm run --rm -it -v $AWS_DIR:/root/.aws $AWS_IMAGE s3 ls $S3_URL
 # --- Import data into Snowflake ---
 echo ""
 echo "Importing into Snowflake... "
-echo "ALTER WAREHOUSE EAI_SURVEY_XS resume IF SUSPENDED;" > $SQL_FILE
+echo "ALTER WAREHOUSE EAI_SURVEY_XS resume IF SUSPENDED;" > $SQL_FILENAME
 for table in ${TABLES[@]}; do
-	echo "DELETE FROM $table WHERE run = $DATE;" >> $SQL_FILE
-	echo "COPY INTO $table FROM '@datastage/$table.csv.gz' FILE_FORMAT = (TYPE = CSV, FIELD_OPTIONALLY_ENCLOSED_BY = '\"',  ESCAPE = '\\\\');" >> $SQL_FILE
+	echo "DELETE FROM $table WHERE run = $DATE;" >> $SQL_FILENAME
+	echo "COPY INTO $table FROM '@datastage/$table.csv.gz' FILE_FORMAT = (TYPE = CSV, FIELD_OPTIONALLY_ENCLOSED_BY = '\"',  ESCAPE = '\\\\');" >> $SQL_FILENAME
 done
-echo "ALTER WAREHOUSE EAI_SURVEY_XS SUSPEND;" >> $SQL_FILE
-# cat $SQL_FILE
-snowsql --config $SNOWSQL_DIR/config --filename $SQL_FILE
-rm $SQL_FILE
+echo "ALTER WAREHOUSE EAI_SURVEY_XS SUSPEND;" >> $SQL_FILENAME
+snowsql --config $SNOWSQL_DIR/config --filename $SQL_FILENAME
+rm $SQL_FILENAME
