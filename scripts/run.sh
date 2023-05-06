@@ -20,6 +20,7 @@ if [ "$CM" == "" ]; then
 	exit 1
 fi
 
+display_title "Running the eai survey"
 cm run --rm --name $EAI_NAME -ti --network host \
 	-v $EAI_CONFIG_FILENAME:/home/jboss/$EAI_NAME-$EAI_VERSION/config.properties \
 	-v $EAI_LOG_CONFIG_FILENAME:/home/jboss/$EAI_NAME-$EAI_VERSION/logging.properties \

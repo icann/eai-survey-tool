@@ -28,13 +28,14 @@ fi
 
 # --- Check dependencies ---
 display_title "Check dependencies"
-check_for_dependencies "$CM" "gzip"
+check_for_dependencies "$CM" "gzip" "snowsql"
 
 # --- Delete old files ---
 rm -rf $CSV_DIR/*.gz
 rm -rf $CSV_DIR/*.csv
 
 # --- Export, Compress and Upload ---
+display_title "Exporting, compressing and uploading the CSV files"
 for table in ${TABLES[@]}; do
 	echo -n "[$table] Exporting... "
 	cm run --rm --name exporter --network host -ti $DB_IMAGE \
@@ -47,13 +48,11 @@ for table in ${TABLES[@]}; do
 done
 
 # --- Display S3 Contents ---
-echo ""
-echo "Amazon $S3_URL files:"
+display_title  "Amazon $S3_URL files"
 cm run --rm -it -v $AWS_DIR:/root/.aws $AWS_IMAGE s3 ls $S3_URL
 
 # --- Import data into Snowflake ---
-echo ""
-echo "Importing into Snowflake... "
+display_title  "Importing into Snowflake"
 echo "ALTER WAREHOUSE EAI_SURVEY_XS resume IF SUSPENDED;" > $SQL_FILENAME
 for table in ${TABLES[@]}; do
 	echo "DELETE FROM $table WHERE run = $DATE;" >> $SQL_FILENAME

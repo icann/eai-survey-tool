@@ -78,6 +78,7 @@ fi
 
 # --- Decompress the zones files and create the SQL import file ---
 if [ ! -d $ZONES_DIR ]; then
+	display_title "Reading zone files"
 	mkdir $ZONES_DIR
 	base=$(ls -rd $ZONES_SRC_DIR/* | head -n 1)
 	for zone in $(ls $base); do
@@ -88,6 +89,7 @@ fi
 
 # --- Create the temporal dataase ---
 if [ ! "$(cm ps -a | grep $DB_NAME)" ]; then
+	display_title "Creating the temporal database"
 	cm run --rm --name $DB_NAME \
 		-e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=yes \
 		-e MARIADB_DATABASE=eai \
@@ -108,7 +110,7 @@ fi
 
 # --- Imports the zones into the tempral database using the SQL import file ---
 if [ $load == "Y" ] && [ -f $ZONES_DIR/record.sql ]; then
-	echo "Loading zones..."
+	display_title "Loading zones"
 	cm run --rm --name importer --network host -ti -v $ZONES_DIR:/zones $DB_IMAGE \
 		mysqlimport --verbose --ignore -h $DB_BIND_ADDR -P $DB_BIND_PORT \
 		-u$DB_USERNAME -p$DB_PASSWORD --local eai /zones/record.sql
