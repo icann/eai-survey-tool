@@ -153,7 +153,6 @@ java.util.logging.FileHandler.count = 3
 The first step is to configure the scripts. All the scripts use the same configuration file in the script folder with the name scripts.cfg.
 | Constant | Example | Description |
 | -------- | ------- | ------------|
-| CMD_ARGS | --root=$HOME/.local/share/containers/storage | Command (podman or docker) arguments |
 | WORK_DIR | $HOME/temp | Base working directory |
 | EAI_NAME | eai-survey | EAI Tool name |
 | EAI_VERSION | 1.1.0 | EAI Tool version |

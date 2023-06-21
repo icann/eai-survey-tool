@@ -4,9 +4,6 @@ COLOR_GREEN='\033[0;32m'
 COLOR_RED='\033[0;31m'
 COLOR_NONE='\033[0m'
 
-# --- Load configuration ---
-. $SCRIPT_DIR/scripts.cfg
-
 # --- Validate configuration ---
 function validate_config() {
 	for conf in $(cat $1 | grep -P "^# [A-Z]+_[A-Z]+" | awk '{print $2}'); do
@@ -51,9 +48,9 @@ function check_for_dependencies() {
 # --- Find container manager ---
 function find_container_manager() {
 	if command -v podman &> /dev/null; then
-		echo "podman $CMD_ARGS"
+		echo "podman"
 	elif command -v docker &> /dev/null; then
-		echo "docker $CMD_ARGS"
+		echo "docker"
 	else
 		echo ""
 	fi
