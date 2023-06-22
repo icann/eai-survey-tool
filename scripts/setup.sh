@@ -112,7 +112,7 @@ fi
 if [ $load == "Y" ] && [ -f $ZONES_DIR/record.sql ]; then
 	display_title "Loading zones"
 	cm run --rm --name importer --network host -ti -v $ZONES_DIR:/zones $DB_IMAGE \
-		mysqlimport --verbose --ignore -h $DB_BIND_ADDR -P $DB_BIND_PORT \
+		mariadb-import --verbose --ignore -h $DB_BIND_ADDR -P $DB_BIND_PORT \
 		-u$DB_USERNAME -p$DB_PASSWORD --local eai /zones/record.sql
 fi
 

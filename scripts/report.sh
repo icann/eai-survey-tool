@@ -23,7 +23,7 @@ fi
 # --- MYSQL ---
 function mysql() {
 	cm run --rm --name reporter --network host -ti $DB_IMAGE \
-	mysql -h $DB_BIND_ADDR -P $DB_BIND_PORT -u$DB_USERNAME -p$DB_PASSWORD eai "$@"
+	mariadb -h $DB_BIND_ADDR -P $DB_BIND_PORT -u$DB_USERNAME -p$DB_PASSWORD eai "$@"
 }
 
 display_title "Report"

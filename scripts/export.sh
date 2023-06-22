@@ -39,7 +39,7 @@ display_title "Exporting, compressing and uploading the CSV files"
 for table in ${TABLES[@]}; do
 	echo -n "[$table] Exporting... "
 	cm run --rm --name exporter --network host -ti $DB_IMAGE \
-		mysql -h $DB_BIND_ADDR -P $DB_BIND_PORT -u root eai -e "select '$DATE', t.* from $table t into outfile '/csv/$table.csv' character set utf8 fields enclosed by '\"' terminated by ',' lines terminated by '\n'"
+		mariadb -h $DB_BIND_ADDR -P $DB_BIND_PORT -u root eai -e "select '$DATE', t.* from $table t into outfile '/csv/$table.csv' character set utf8 fields enclosed by '\"' terminated by ',' lines terminated by '\n'"
 	echo -n "OK,   Compressing... "
 	gzip -9 $CSV_DIR/$table.csv
 	echo -n "OK,   Uploading... "
