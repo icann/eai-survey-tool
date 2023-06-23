@@ -301,6 +301,32 @@ schema = [redacted]
 warehousename = [redacted]
 rolename = [redacted]
 ```
+
+### 6. Podman / Docker Storage
+Storage
+
+Depending on the size and the quantity of the zone tested, the EAI survey can take up a lot of hard disk space. If you plan to use Podman or Docker to run it, consider configuring the storage to a big partition.
+
+Here is an example of how to configure both container managers.
+
+#### Podman ~/.config/containers/storage.conf
+```
+[storage]
+driver = "overlay"
+runroot = "/data/podman"
+graphroot = "/data/podman"
+
+[storage.options.overlay]
+mount_program = "/usr/bin/fuse-overlayfs"
+```
+
+### Docker /lib/systemd/system/docker.service (Debian)
+```
+...
+ExecStart=/usr/bin/dockerd --data-root /data/docker -H fd:// --containerd=/run/containerd/containerd.sock
+...
+```
+
 ## Results ER Diagram
 ```mermaid
 erDiagram
