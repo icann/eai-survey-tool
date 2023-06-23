@@ -303,8 +303,6 @@ rolename = [redacted]
 ```
 
 ### 6. Podman / Docker Storage
-Storage
-
 Depending on the size and the quantity of the zone tested, the EAI survey can take up a lot of hard disk space. If you plan to use Podman or Docker to run it, consider configuring the storage to a big partition.
 
 Here is an example of how to configure both container managers.
