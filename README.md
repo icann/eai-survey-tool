@@ -344,7 +344,7 @@ kernel.threads-max=200000
 ...
 ```
 
-#### ~/.config/containers/containers.conf
+#### File ~/.config/containers/containers.conf
 ```
 [containers]
 pids_limit=0
