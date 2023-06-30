@@ -325,6 +325,32 @@ ExecStart=/usr/bin/dockerd --data-root /data/docker -H fd:// --containerd=/run/c
 ...
 ```
 
+### 7. Podman Threads
+The survey code can create a significant number of threads (configurable), and by default Linux and Podman configuration limits the number of threads on the system.
+
+To update the max number of threads, configure the following files:
+
+#### File /etc/systemd/logind.conf
+```
+...
+UserTasksMax=150000
+...
+```
+
+#### File /etc/sysctl.conf
+```
+...
+kernel.threads-max=200000
+...
+```
+
+#### ~/.config/containers/containers.conf
+```
+[containers]
+pids_limit=0
+#Note: Maximum number of processes allowed in a container. 0 indicates that no limit is imposed.
+```
+
 ## Results ER Diagram
 ```mermaid
 erDiagram

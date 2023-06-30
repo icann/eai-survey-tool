@@ -24,7 +24,8 @@ display_title "Running the eai survey"
 cm run --rm --name $EAI_NAME -ti --network host \
 	-v $EAI_CONFIG_FILENAME:/home/jboss/$EAI_NAME-$EAI_VERSION/config.properties \
 	-v $EAI_LOG_CONFIG_FILENAME:/home/jboss/$EAI_NAME-$EAI_VERSION/logging.properties \
-	-v $EAI_LOGS_DIR:/logs \
+	-v $EAI_LOGS_DIR:/logs:z \
 	-v $EAI_MAXMIND_FILENAME:/home/jboss/$EAI_NAME-$EAI_VERSION/geoip/GeoIP2-Country.mmdb \
+	--user root \
 	-w /home/jboss/$EAI_NAME-$EAI_VERSION \
 	-d $EAI_IMAGE $EAI_RUN_COMMAND
