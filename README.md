@@ -351,6 +351,16 @@ pids_limit=0
 #Note: Maximum number of processes allowed in a container. 0 indicates that no limit is imposed.
 ```
 
+### 8. Podman rootless containers exit once the user session exits.
+
+Depending on the data, the survey can take a lot of time to process, and if you are using Podman, usually the container exit once you log out of your user session.
+
+You can run the following command to prevent this behavior before closing the session.
+
+```
+# loginctl enable-linger $UID
+```
+
 ## Results ER Diagram
 ```mermaid
 erDiagram
