@@ -8,15 +8,27 @@ The application is built in Java 8 and uses a MariaDB database to store the test
 ### Compiling the source code
 - Java Compiler version 8 or superior.
 - Apache Maven version 3.6 or superior.
-### Execution
+### Compiling the source code with Buildah and creating an Podman/Docker image
+- Buildah 1.19.6 or superior.
+### Manual Execution
 - Java JRE version 8 or superior.
 - Docker CE version 20.10.7 or superior.
 - MariaDB client version 15.1 or superior.
 - SnowSQL version 1.2.16 or superior.
 - User must be on the docker group.
 - User must be able to run sudo.
+### Podman Execution
+- Podman 3.0.1 or superior.
+- SnowSQL version 1.2.16 or superior.
+- User must be able to run sudo.
+### Docker Execution
+- Docker CE version 20.10.7 or superior.
+- SnowSQL version 1.2.16 or superior.
+- User must be on the docker group.
+- User must be able to run sudo.
 
-## Compiling the Source Code
+## Manual Execution
+### Compiling the Source Code
 To compile the source code, the user can use Apache Maven. Apache Maven Assembly Plugin is used to create the distribution package. To create the distribution package is created executing these couple of commands on the command line at the project's root directory.
 ```
 $ git clone https://github.com/icann/eai-survey-tool.git
@@ -26,13 +38,24 @@ $ mvn assembly:single
 ```
 After running these steps, the distribution bundle will be created on the target folder, and will have the name eai-survey-$VERSION.tar.gz. This bundle will contain all the compiled code and dependencies. The only thing missing will be the configuration files: config.properties and logging.properties.
 
-## Installation
+### Installation
 The user can install the application decompressing the tar file at any location. The tar file contains all the needed files and dependencies.
 
 ```
 tar -xvf eai-survey-$VERSION.tar.gz
 ```
-        
+
+## Podman/Docker Execution
+### Compiling the Source Code
+To compile the source code, the user can use the buildah.sh script that utilizes buildah to compile the source code and creates a Podman/Docker image.
+```
+$ git clone https://github.com/icann/eai-survey-tool.git
+$ cd eai-survey-tool
+$ buildah unshare
+$ scripts/buildah.sh
+$ exit
+```
+
 ## Configuration
 The user can configure the application using a configuration file named config.properties. The application search this file at the install directory of the application by default.
 
@@ -126,29 +149,52 @@ java.util.logging.FileHandler.limit = 10485760
 java.util.logging.FileHandler.count = 3
 ```
 ## Running the survey
-### 1. Execute setup.sh script.
-The first step is to make everything ready for the survey executing the `setup.sh` script. This script search for the latest zones files, decompress them, parse them, and creates an import database file. This script also creates a Docker container from the latest version of MariaDB image.
+### 1. Configure the scripts.
+The first step is to configure the scripts. All the scripts use the same configuration file in the script folder with the name scripts.cfg.
+| Constant | Example | Description |
+| -------- | ------- | ------------|
+| WORK_DIR | $HOME/temp | Base working directory |
+| EAI_NAME | eai-survey | EAI Tool name |
+| EAI_VERSION | 1.1.0 | EAI Tool version |
+| EAI_IMAGE | $EAI_NAME:$EAI_VERSION | EAI Tool container image |
+| EAI_CONFIG_FILENAME | $PWD/config.properties | EAI Tool configuration file |
+| EAI_LOG_CONFIG_FILENAME | $PWD/logging.properties | EAI Tool log configuration file |
+| EAI_LOGS_DIR | $HOME/logs | EAI Tool logs folder. Mapped to: /logs |
+| EAI_MAXMIND_FILENAME | $HOME/geoip/GeoIP2-Country.mmdb | EAI Tool MaxMind database file |
+| EAI_RUN_COMMAND | java -Xmx4g -jar $EAI_NAME-$EAI_VERSION.jar | EAI Tool execution command |
+| BUILDAH_BUILDER_IMAGE | registry.access.redhat.com/ubi8/openjdk-11 | Buildah builder container image |
+| BUILDAH_RUN_IMAGE | registry.access.redhat.com/ubi8/openjdk-11-runtime | Buildah run container image |
+| ZONES_SRC_DIR | $HOME/zones | Sorce zones directory |
+| ZONES_DIR | $WORK_DIR/zones | Working zones directory |
+| DB_DIR | $WORK_DIR/data | Database files |
+| DB_IMAGE | docker.io/mariadb | Database container image |
+| DB_BIND_ADDR | 127.0.0.1 | Database binding address |
+| DB_BIND_PORT | 3306 | Database binding port |
+| DB_INIT_SCRIPT_FILENAME | $PWD/src/test/resources/tables.sql | Database initial script |
+| DB_NAME | maria | Database container name |
+| DB_MEM | 20G | Memory used by the database |
+| DB_USERNAME | eai | Database username |
+| DB_PASSWORD | eai | Database password |
+| CSV_DIR | $WORK_DIR/csv | Output directory |
+| AWS_DIR | $HOME/.aws | Amazon AWS client config path |
+| AWS_IMAGE | docker.io/amazon/aws-cli | Amazon AWS client container image |
+| SNOWSQL_DIR | $HOME/.snowsql | SnowSQL client path |
+| SQL_FILENAME | dev/shm/import.sql | Temporal sql file with the results |
+| TABLES | ("progress" "record" "record_mx" "mx" "mx_ip" "ip") | List of tables to export |
+| S3_URL | s3://example | AWS S3 URL to upload |
 
-Zone files are expected to be found in the location specified by the `ZONES_DATA` parameter, following the structure below. In the directory structure, the `yyyymmdd` directory is replaced with the date corresponding to the date of the zone files to be used in the survey, and `tld1`, `tld2`, etc. is replaced with the actual TLDs to be surveyed. If more than one directory is found for multiple dates, the script will consider the directory named after the latest date available only:
- - source_directory (as configured for the ZONES_DATA constant)
+### 2. Execute setup.sh script.
+The next step is  executing the `setup.sh` script. This script search for the latest zones files, decompress them, parse them, and creates an import database file. This script also creates a Docker container from the latest version of MariaDB image.
+
+Zone files are expected to be found in the location specified by the `ZONES_SRC_DIR` parameter, following the structure below. In the directory structure, the `yyyymmdd` directory is replaced with the date corresponding to the date of the zone files to be used in the survey, and `tld1`, `tld2`, etc. is replaced with the actual TLDs to be surveyed. If more than one directory is found for multiple dates, the script will consider the directory named after the latest date available only:
+ - source_directory (as configured for the ZONES_SRC_DIR constant)
    - yyyymmdd
-     - tld1 
+     - tld1
        - tld1.zone.gz
      - tld2
        - tld2.zone.gz
 
-The begging of the scripts contains a group of constants used on the whole script. The user can update these constants to customize the script. The username and password to be used for creating and accessing the database should be replaced in the scripts too.
-
-| Constant | Default Value | Description |
-| --- | --- | --- |
-| DB_DIR| data | Database files.
-| DB_NAME| maria | Docker database container name.
-| DB_MEM| 20G | Memory used by the database.
-| CSV_DIR| csv | Export directory.
-| ZONES_DATA| /data/zones | Source zones directory.
-| ZONES_DIR| zones | Working zones directory.
-
-### 2. Running the main JAR
+### 3.a Manual Execution: Running the main JAR
 The next step is to execute the main JAR file. This application will search, resolve, and test all the Mail Exchange servers. If a critical error occurs at any point of the execution, the user can re-run this application and resume the test.
 ```
 java -Xmx4g -jar eai-survey-1.1.0.jar
@@ -167,7 +213,26 @@ select count(*) from mx where status_4 = 'N' or status_6 = 'N';
 # Count MX to test
 select count(*) from ip where status = 'N';
 ```
-### 3. Checking the results (Optional)
+### 3.b Podman/Docker Execution: Runing the survey
+The next step is running the survey using the run.sh script that utilizes Podman or Docker to run the code inside a container.
+```
+scripts/run.sh
+```
+Users can check the progress of the survey querying the temporary database.
+```
+# Check general progress. The timestamp indicates when the step was finished.
+select * from progress;
+
+# Count SLD to process
+select count(*) from record where status = 'N';
+
+# Count MX to resolve
+select count(*) from mx where status_4 = 'N' or status_6 = 'N';
+
+# Count MX to test
+select count(*) from ip where status = 'N';
+```
+### 4. Checking the results (Optional)
 The user also can use the `report.sh` script to display a summary of the execution. This script can take a while, so please be patient. The user and password to use for accessing the database must be replaced accordingly.
 
 Here is an example of the execution.
@@ -209,7 +274,7 @@ Number of IP: 2,567,691
 - ASCII test passed: 155,439
 - UTF-8 test passed: 155,071
 ```
-### 4. Exporting the results (Optional)
+### 5. Exporting the results (Optional)
 Once that the survey completes, the user can use the export.sh script to export all database tables into CSV files. The script also compresses the files to optimize upload time to the S3 bucket. And finally, the script imports all the data into the snowflake data warehouse.
 
 The S3 bucket and the SnowSQL client must be configured and available to the user. Here is a copy of the used configurations:
@@ -224,7 +289,7 @@ region = [redacted]
 [default]
 aws_access_key_id = [redacted]
 aws_secret_access_key = [redacted]
-```        
+```
 #### ~/.snowsql/config
 ```
 [connections]
@@ -235,42 +300,139 @@ dbname = [redacted]
 schema = [redacted]
 warehousename = [redacted]
 rolename = [redacted]
-```        
-The begging of the script contains a group of constants used on the whole script. The user can update these constants to customize the script.
+```
 
-| Constant | Default Value | Description |
-| --- | --- | --- |
-| AWS_DIR | /home/centos/.aws | AWS S3 Bucket config directory. |
-| SNOWSQL_DIR | /home/centos/.snowsql | SnowSQL config directory. |
-| TABLES | ("progress" "record" "record_mx" "mx" "mx_ip" "ip") | Tables to export. |
+### 6. Podman / Docker Storage
+Depending on the size and the quantity of the zone tested, the EAI survey can take up a lot of hard disk space. If you plan to use Podman or Docker to run it, consider configuring the storage to a big partition.
+
+Here is an example of how to configure both container managers.
+
+#### Podman ~/.config/containers/storage.conf
+```
+[storage]
+driver = "overlay"
+runroot = "/data/podman"
+graphroot = "/data/podman"
+
+[storage.options.overlay]
+mount_program = "/usr/bin/fuse-overlayfs"
+```
+
+#### Docker /lib/systemd/system/docker.service (Debian)
+```
+...
+ExecStart=/usr/bin/dockerd --data-root /data/docker -H fd:// --containerd=/run/containerd/containerd.sock
+...
+```
+
+### 7. Podman Threads
+The survey code can create a significant number of threads (configurable), and by default Linux and Podman configuration limits the number of threads on the system.
+
+To update the max number of threads, configure the following files:
+
+#### File /etc/systemd/logind.conf
+```
+...
+UserTasksMax=150000
+...
+```
+
+#### File /etc/sysctl.conf
+```
+...
+kernel.threads-max=200000
+...
+```
+
+#### File ~/.config/containers/containers.conf
+```
+[containers]
+pids_limit=0
+#Note: Maximum number of processes allowed in a container. 0 indicates that no limit is imposed.
+```
+
+### 8. Podman rootless containers exit once the user session exits.
+
+Depending on the data, the survey can take a lot of time to process, and if you are using Podman, usually the container exit once you log out of your user session.
+
+You can run the following command to prevent this behavior before closing the session.
+
+```
+# loginctl enable-linger $UID
+```
 
 ## Results ER Diagram
-![See ER diagram at ./docs/er.svg](./docs/er.svg)
+```mermaid
+erDiagram
+
+progress {
+    int id PK
+    varchar(100) name
+    timestamp timestamp
+}
+
+record {
+    varchar(255) name PK
+    varchar(63) zone
+    char(1) status
+}
+
+record_mx {
+    varchar(255) owner PK, FK
+    varchar(255) mx PK, FK
+}
+
+mx {
+    varchar(255) mx PK
+    char(1) status_4
+    char(1) status_6
+}
+
+mx_ip {
+    varchar(155) mx PK, FK
+    varchar(39) ip PK, FK
+}
+
+ip {
+    varchar(39) ip PK
+    char(1) status
+    text(32768) header
+    text(4000) ehlo_result
+    char(1) ehlo_success
+    text(4000) ascii_result
+    char(1) ascii_success
+    text(4000) idn_result
+    char(1) idn_success
+    char(1) country
+    timestamp timestamp
+}
+
+record ||--o{ record_mx : has
+mx ||--|{ record_mx: has
+mx ||--o{ mx_ip : has
+ip ||--|{ mx_ip: has
+```
 
 | progress | Records the time when a step of the survey was finished |
 | --- | --- |
-| run | Survey execution id |
 | id | Step id |
 | name | Step name |
 | timestamp | Timestamp when the step was finished |
- 	 
+
 | record | Records of all the zones |
 | --- | --- |
-| run | Survey execution id |
 | owner | SLD |
 | zone | Zone |
 | status | Search for MX Servers Status [1] |
- 	 
+
 | mx | List the MX servers related to the records |
 | --- | --- |
-| run | Survey execution id |
 | mx | MX Server |
 | status_4 | Resolve IPv4 Status [1] |
 | status_6 | Resolve IPv6 Status [1] |
- 	 
+
 | ip | List the IP addresses for the MX servers |
 | --- | --- |
-| run | Survey execution id |
 | ip | IP Address |
 | status | Survey test status for the IP address [2] |
 | header | Server message when first connected |
@@ -295,7 +457,7 @@ The begging of the script contains a group of constants used on the whole script
  - S - Skipped Special
  - X - Excluded
  - T - Tested
- 
+
 # License
 
  Copyright 2021 Internet Corporation for Assigned Names and Numbers ("ICANN")
@@ -303,12 +465,12 @@ The begging of the script contains a group of constants used on the whole script
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
- 
+
